@@ -1,6 +1,8 @@
 # Archivo de configuración para Netlify
 
 [build]
+  # Comando para ejecutar durante la compilación. Esto asegura que se instalen las dependencias.
+  command = "npm install"
   # Directorio que se publicará (donde están tu ia.html, style.css, etc.).
   # Como están en la raíz, usamos "."
   publish = "."
