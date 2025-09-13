@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <title>Vex</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="chat-container">
+        <div id="chat-header">
+            <h3>Vex</h3>
+            <div id="header-buttons">
+                <button id="settings-btn" title="Configuración">⚙️</button>
+                <button id="clear-chat-btn" title="Borrar historial">Limpiar</button>
+            </div>
+        </div>
+        <div id="chat-box">
+            <div class="message bot-message">
+                <p>¡Hola! He estado esperando tu mensaje. ¿Listo para resolver los misterios del universo o solo quieres saber qué cenar hoy?</p>
+            </div>
+        </div>
+        <form id="chat-form">
+            <input type="text" id="user-input" placeholder="Escribe tu mensaje..." autocomplete="off" required>
+            <button type="submit">Enviar</button>
+        </form>
+    </div>
+
+    <!-- Panel Modal de Configuración -->
+    <div id="settings-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <span id="close-settings-btn" class="close-btn">&times;</span>
+            <h2>Configuración de Personalidad</h2>
+            <p>Elige o personaliza el comportamiento del bot. Los cambios se aplicarán en la siguiente conversación.</p>
+            
+            <label for="personality-select">Personalidades predefinidas:</label>
+            <select id="personality-select">
+                <option value="default">Amigable y Ocurrente (Por defecto)</option>
+                <option value="formal">Asistente Formal y Profesional</option>
+                <option value="pirate">Pirata Aventurero</option>
+                <option value="custom">Personalizado</option>
+            </select>
+            <textarea id="custom-prompt" rows="10" placeholder="Si eliges 'Personalizado', describe aquí cómo quieres que se comporte el bot..."></textarea>
+            <div class="setting-item" id="auto-speech-setting">
+                <input type="checkbox" id="auto-speech-checkbox">
+                <label for="auto-speech-checkbox">Leer respuestas de la IA en voz alta automáticamente</label>
+            </div>
+            <button id="save-settings-btn">Guardar Cambios</button>
+        </div>
+    </div>
+
+    <!-- Contenedor para notificaciones elegantes -->
+    <div id="toast-notification"></div>
+
+    <!-- Panel Modal de Confirmación de Borrado -->
+    <div id="confirm-clear-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h2>Confirmar Borrado</h2>
+            <p>¿Estás seguro de que quieres borrar todo el historial del chat? Esta acción no se puede deshacer.</p>
+            <div class="modal-buttons">
+                <button id="cancel-clear-btn" class="modal-btn modal-btn-secondary">Cancelar</button>
+                <button id="confirm-clear-action-btn" class="modal-btn modal-btn-danger">Confirmar</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Registrar el Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(registration => {
+                    console.log('ServiceWorker registrado con éxito:', registration.scope);
+                }).catch(error => {
+                    console.log('Fallo en el registro del ServiceWorker:', error);
+                });
+            });
+        }
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>

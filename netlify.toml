@@ -1,0 +1,8 @@
+# Archivo de configuración para Netlify
+
+[build]
+  # Directorio que se publicará (donde están tu ia.html, style.css, etc.).
+  # Como están en la raíz, usamos "."
+  publish = "."
+  # Directorio donde Netlify buscará tus funciones serverless.
+  functions = "netlify/functions"
