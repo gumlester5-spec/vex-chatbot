@@ -1,7 +1,7 @@
 {
   "name": "Vex",
   "short_name": "Vex",
-  "start_url": "/ia.html",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#f4f4f9",
   "theme_color": "#007bff",

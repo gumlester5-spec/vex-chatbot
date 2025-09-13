@@ -1,7 +1,7 @@
 const CACHE_NAME = 'gemini-chatbot-v1';
 const urlsToCache = [
   '/',
-  'ia.html',
+  'index.html',
   'style.css',
   'script.js',
   'icon-192.png',
