@@ -1,18 +1,14 @@
-// --- ESTRATEGIA DE CACHÉ ---
-// Cambia este número de versión cada vez que despliegues cambios en tus archivos (CSS, JS, HTML).
-const CACHE_VERSION = 'v3';
-const CACHE_NAME = `gemini-chatbot-${CACHE_VERSION}`;
-
+const CACHE_NAME = 'gemini-chatbot-v1';
 const urlsToCache = [
   '/',
   'index.html',
   'style.css',
   'script.js',
   'icon-192.png',
-  'icon-512.png',
+  'icon-512.png'
 ];
-// 1. Evento 'install': Se dispara cuando el navegador instala el SW.
-// Ideal para cachear los archivos estáticos de la aplicación (el "App Shell").
+
+// Instalar el Service Worker y cachear los assets
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
