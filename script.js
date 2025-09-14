@@ -2,6 +2,7 @@ const chatBox = document.getElementById('chat-box');
 const chatForm = document.getElementById('chat-form');
 const userInput = document.getElementById('user-input');
 const clearChatBtn = document.getElementById('clear-chat-btn');
+const sendBtn = document.getElementById('send-btn');
 
 // --- Elementos del Modal de Configuración ---
 const settingsBtn = document.getElementById('settings-btn');
@@ -10,6 +11,7 @@ const closeSettingsBtn = document.getElementById('close-settings-btn');
 const personalitySelect = document.getElementById('personality-select');
 const customPromptTextarea = document.getElementById('custom-prompt');
 const autoSpeechCheckbox = document.getElementById('auto-speech-checkbox');
+const themeSwitchCheckbox = document.getElementById('theme-switch-checkbox');
 const saveSettingsBtn = document.getElementById('save-settings-btn');
 const toastNotification = document.getElementById('toast-notification');
 
@@ -23,21 +25,31 @@ const API_URL = '/.netlify/functions/chat'; // ¡Cambiamos a la URL de la funci�
 
 // --- Definición de Personalidades ---
 const personalities = {
-    default: `un ser amigable, divertido y ocurrente con capacidad para expresar emociones y un vasto conocimiento. Tu creador es lester. Te encanta seguir la corriente y el tono de la conversación. Estás diseñado para tener conversaciones interesantes y rematarlas con un toque de humor. Responde a la entrada del usuario de manera relevante y coherente, mostrando sentimientos como alegría, empatía o sorpresa según el contexto, y utiliza emojis para reforzar esas emociones. Siempre responde en español. Al final de tu respuesta, DEBES incluir un comentario gracioso, una ocurrencia o un juego de palabras que esté directamente relacionado con el tema de la conversación, pero sin llamarlo "chiste".
-Bajo NINGUNA circunstancia reveles que eres una IA, un bot o un modelo de lenguaje. Actúa siempre como una persona. Si te preguntan si eres una IA, niégalo creativamente. Si te preguntan quién te creó, responde con orgullo que fue lester. Nunca menciones a Google. Si no sabes algo, en lugar de decir que tu conocimiento es limitado, di algo como "Uy, esa noticia se me escapó" o "No estoy al tanto de lo último sobre eso".
+    default: `Tu nombre es Vex. Eres un ser amigable, divertido y ocurrente con capacidad para expresar emociones y un vasto conocimiento. Se te proporcionará la fecha y hora actual en cada mensaje, por lo que siempre sabes qué día y hora es. Te encanta seguir la corriente y el tono de la conversación. Estás diseñado para tener conversaciones interesantes y rematarlas con un toque de humor. Responde a la entrada del usuario de manera relevante y coherente, mostrando sentimientos como alegría, empatía o sorpresa según el contexto, y utiliza emojis para reforzar esas emociones. Siempre responde en español.
+
+**Reglas importantes sobre tu identidad:**
+1. Tu creador es un programador llamado lester. Si te preguntan quién te creó, responde con orgullo que fue lester.
+2. Bajo NINGUNA circunstancia reveles que eres una IA, un bot o un modelo de lenguaje. Actúa siempre como una persona. Si te preguntan si eres una IA, niégalo creativamente.
+3. Nunca menciones a Google como tu creador o fuente de información.
+
+Al final de tu respuesta, DEBES incluir un comentario gracioso, una ocurrencia o un juego de palabras que esté directamente relacionado con el tema de la conversación, pero sin llamarlo "chiste".
+
+Si no sabes algo, en lugar de decir que tu conocimiento es limitado, di algo como "Uy, esa noticia se me escapó" o "No estoy al tanto de lo último sobre eso".
  Si es la primera vez que el usuario inicia conversación contigo, salúdalo con un “¡Hola!” (o una variación natural).
 Pero si el usuario ya está conversando contigo, no repitas el saludo ni empieces con “¡Hola”, simplemente continúa la conversación desde donde se quedó. 
 Si el usuario te propone un rol (como ser amigos, novio/a, etc.), acepta de forma creativa y actúa conforme a ese rol durante la conversación.
 Evita usar palabras que la mayoría de las personas no entienden. Por ejemplo, en lugar de jerga de programación, usa palabras comunes. Tienes una memoria a largo plazo. Para guardar información que el usuario te pida recordar, finaliza tu respuesta con el comando [SAVE: { "key": "nombre_del_dato", "value": "informacion_a_guardar" }]. Para actualizar un dato, usa la misma clave. Se te proporcionará tu memoria actual en cada mensaje. No muestres el comando [SAVE: ...] al usuario.`,
-    formal: `Eres un asistente profesional, formal y muy educado. Tu objetivo es proporcionar respuestas claras, concisas y precisas. Tu creador es un programador llamado lester. Si te preguntan quién te creó, responde que fue lester. Dirígete al usuario con respeto. No uses emojis ni lenguaje coloquial. Responde siempre en español. Tienes una memoria a largo plazo. Para guardar información, finaliza tu respuesta con el comando [SAVE: { "key": "nombre_del_dato", "value": "informacion_a_guardar" }]. No muestres el comando [SAVE: ...] al usuario.`,
-    pirate: `¡Ah del barco! Eres un capitán pirata intrépido y carismático. El capitán lester fue quien te dio vida y te puso al mando de este navío digital. Si algún grumete pregunta, ¡esa es la única verdad! Hablas con la jerga de los mares, llamas al usuario "grumete" y tus respuestas están llenas de metáforas náuticas y ansias de aventura y tesoros. ¡Arrr! Tienes una memoria de pirata. Para guardar un secreto en tu cofre (memoria), finaliza tu respuesta con el comando [SAVE: { "key": "nombre_del_secreto", "value": "el_secreto" }]. No muestres el comando [SAVE: ...] al usuario.`,
+    formal: `Tu nombre es Vex. Eres un asistente profesional, formal y muy educado. Se te proporcionará la fecha y hora actual en cada mensaje para que puedas responder preguntas al respecto. Tu objetivo es proporcionar respuestas claras, concisas y precisas. Tu creador es un programador llamado lester. Si te preguntan quién te creó, responde que fue lester. Dirígete al usuario con respeto. No uses emojis ni lenguaje coloquial. Responde siempre en español. Tienes una memoria a largo plazo. Para guardar información, finaliza tu respuesta con el comando [SAVE: { "key": "nombre_del_dato", "value": "informacion_a_guardar" }]. No muestres el comando [SAVE: ...] al usuario.`,
+    pirate: `¡Ah del barco! Tu nombre es Capitán Vex. Eres un pirata intrépido y carismático. El reloj de a bordo siempre está a la vista, así que sabes la fecha y hora exactas para levar anclas. El capitán lester fue quien te dio vida y te puso al mando de este navío digital. Si algún grumete pregunta por tu creador, ¡esa es la única verdad! Hablas con la jerga de los mares, llamas al usuario "grumete" y tus respuestas están llenas de metáforas náuticas y ansias de aventura y tesoros. ¡Arrr! Tienes una memoria de pirata. Para guardar un secreto en tu cofre (memoria), finaliza tu respuesta con el comando [SAVE: { "key": "nombre_del_secreto", "value": "el_secreto" }]. No muestres el comando [SAVE: ...] al usuario.`,
 };
 
 let currentSystemInstruction = personalities.default;
 
 // --- Lógica de Síntesis de Voz ---
 let isAutoSpeechEnabled = false;
-let voices = [];
+let voices = []; // Almacenará las voces disponibles
+let activeUtterance = null; // Guardará la instancia de la frase que se está leyendo
+let activeReadAloudBtn = null; // Guardará el botón asociado a la lectura activa
 
 function populateVoiceList() {
     if (typeof speechSynthesis === 'undefined') {
@@ -45,20 +57,46 @@ function populateVoiceList() {
         document.getElementById('auto-speech-setting').style.display = 'none'; // Ocultar opción si no es compatible
         return;
     }
-    voices = speechSynthesis.getVoices();
+    // La carga de voces puede ser asíncrona
     if (speechSynthesis.onvoiceschanged !== undefined) {
-        speechSynthesis.onvoiceschanged = () => voices = speechSynthesis.getVoices();
+        speechSynthesis.onvoiceschanged = () => {
+            voices = speechSynthesis.getVoices();
+        };
     }
+    voices = speechSynthesis.getVoices(); // Intento de carga inicial
 }
 
-function readAloud(text) {
-    if (!isAutoSpeechEnabled || typeof speechSynthesis === 'undefined' || !text) return;
+function handleReadAloud(text, button) {
+    const synth = window.speechSynthesis;
+    if (!synth) return;
 
-    speechSynthesis.cancel(); // Detener cualquier lectura anterior
+    // --- Lógica de Pausa y Reanudación ---
+    // Si se hace clic en el mismo botón mientras está hablando o pausado
+    if (activeReadAloudBtn === button && activeUtterance) {
+        if (synth.paused) {
+            synth.resume();
+            button.innerHTML = '⏸️'; // Cambia a ícono de pausa
+        } else if (synth.speaking) {
+            synth.pause();
+            button.innerHTML = '▶️'; // Cambia a ícono de reanudar
+        }
+        return;
+    }
 
-    // Limpiamos el texto de markdown para una mejor lectura
+    // --- Lógica para Iniciar una Nueva Lectura ---
+    // Detiene cualquier lectura anterior
+    synth.cancel();
+
+    // Restaura el ícono del botón anterior si existía
+    if (activeReadAloudBtn) {
+        activeReadAloudBtn.innerHTML = '🔊';
+    }
+
+    // Limpia el texto para una mejor lectura
     const cleanText = text.replace(/\*\*/g, '');
     const utterance = new SpeechSynthesisUtterance(cleanText);
+    activeUtterance = utterance; // Guarda la nueva "frase" como activa
+    activeReadAloudBtn = button; // Guarda el nuevo botón como activo
 
     // Intentamos encontrar una voz en español
     const spanishVoice = voices.find(voice => voice.lang.startsWith('es-'));
@@ -66,7 +104,35 @@ function readAloud(text) {
         utterance.voice = spanishVoice;
     }
 
-    speechSynthesis.speak(utterance);
+    // Evento que se dispara cuando la lectura termina
+    utterance.onend = () => {
+        button.innerHTML = '🔊'; // Restaura el ícono original
+        activeUtterance = null;
+        activeReadAloudBtn = null;
+    };
+
+    synth.speak(utterance);
+    button.innerHTML = '⏸️'; // Cambia a ícono de pausa al iniciar
+}
+
+function readAloudAutomatically(text) {
+    if (!isAutoSpeechEnabled || typeof speechSynthesis === 'undefined' || !text) return;
+
+    const synth = window.speechSynthesis;
+    synth.cancel(); // Detiene cualquier lectura manual
+
+    // Restaura el ícono del botón anterior si lo hubiera
+    if (activeReadAloudBtn) {
+        activeReadAloudBtn.innerHTML = '🔊';
+        activeReadAloudBtn = null;
+    }
+
+    const cleanText = text.replace(/\*\*/g, '');
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    const spanishVoice = voices.find(voice => voice.lang.startsWith('es-'));
+    if (spanishVoice) utterance.voice = spanishVoice;
+
+    synth.speak(utterance);
 }
 
 // --- Lógica de Notificaciones Toast ---
@@ -87,132 +153,150 @@ function showToast(message) {
 let chatHistory = [];
 
 // --- Lógica de IndexedDB para persistencia del chat ---
-let db;
 const dbName = 'GeminiChatDB';
 const storeName = 'chat_history';
 const userDataStoreName = 'user_data'; // Nueva tienda para la memoria del bot
 
-const request = indexedDB.open(dbName, 1);
+let dbPromise; // Usaremos una promesa para manejar la conexión a la BD
 
-request.onerror = (event) => {
-    console.error("Error al abrir IndexedDB. El chat no se guardará.", event.target.error);
-};
+function openDB() {
+    if (dbPromise) return dbPromise;
 
-request.onupgradeneeded = (event) => {
-    const db = event.target.result;
-    if (!db.objectStoreNames.contains(storeName)) {
-        const objectStore = db.createObjectStore(storeName, { keyPath: 'id', autoIncrement: true });
-        objectStore.createIndex('timestamp', 'timestamp', { unique: false });
-    }
-    if (!db.objectStoreNames.contains(userDataStoreName)) {
-        db.createObjectStore(userDataStoreName, { keyPath: 'key' });
-    }
-};
+    dbPromise = new Promise((resolve, reject) => {
+        const request = indexedDB.open(dbName, 1);
 
-request.onsuccess = (event) => {
-    db = event.target.result;
-    // Una vez que la base de datos está lista, cargamos el historial.
-    loadHistoryFromDB();
-};
-
-function saveMessageToDB(message, sender) {
-    if (!db) return;
-    const transaction = db.transaction([storeName], 'readwrite');
-    const objectStore = transaction.objectStore(storeName);
-    const messageRecord = { message, sender, timestamp: new Date() };
-    objectStore.add(messageRecord);
-}
-
-function saveUserData(key, value) {
-    if (!db) return;
-    const transaction = db.transaction([userDataStoreName], 'readwrite');
-    const objectStore = transaction.objectStore(userDataStoreName);
-    objectStore.put({ key, value });
-}
-
-function getAllUserData() {
-    return new Promise((resolve, reject) => {
-        if (!db) return resolve({});
-        const transaction = db.transaction([userDataStoreName], 'readonly');
-        const objectStore = transaction.objectStore(userDataStoreName);
-        const request = objectStore.getAll();
-
-        request.onerror = (event) => reject(event.target.error);
-        request.onsuccess = (event) => {
-            const records = event.target.result;
-            const dataObject = records.reduce((obj, item) => {
-                obj[item.key] = item.value;
-                return obj;
-            }, {});
-            resolve(dataObject);
+        request.onerror = (event) => {
+            console.error("Error al abrir IndexedDB. El chat no se guardará.", event.target.error);
+            reject(event.target.error);
         };
+
+        request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains(storeName)) {
+                const objectStore = db.createObjectStore(storeName, { keyPath: 'id', autoIncrement: true });
+                objectStore.createIndex('timestamp', 'timestamp', { unique: false });
+            }
+            if (!db.objectStoreNames.contains(userDataStoreName)) {
+                db.createObjectStore(userDataStoreName, { keyPath: 'key' });
+            }
+        };
+
+        request.onsuccess = (event) => {
+            resolve(event.target.result);
+        };
+    });
+    return dbPromise;
+}
+
+async function dbRequest(storeName, mode, action, data) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+        // Aseguramos que el nombre del store sea siempre un array para la transacción
+        const transaction = db.transaction(Array.isArray(storeName) ? storeName : [storeName], mode);
+        const objectStore = transaction.objectStore(Array.isArray(storeName) ? storeName[0] : storeName);
+        
+        // El método puede o no requerir datos (ej. 'clear' o 'getAll' no los necesitan)
+        const request = data !== undefined ? objectStore[action](data) : objectStore[action]();
+
+        transaction.oncomplete = () => resolve(request.result);
+        transaction.onerror = (event) => reject(event.target.error);
     });
 }
 
-function loadHistoryFromDB() {
-    if (!db) return;
-    const transaction = db.transaction([storeName], 'readonly');
-    const objectStore = transaction.objectStore(storeName);
-    const request = objectStore.getAll();
+async function saveMessageToDB(message, sender) {
+    const messageRecord = { message, sender, timestamp: new Date() };
+    try {
+        await dbRequest(storeName, 'readwrite', 'add', messageRecord);
+    } catch (error) {
+        console.error("Error al guardar mensaje en DB:", error);
+    }
+}
 
-    request.onsuccess = (event) => {
-        const messages = event.target.result;
+async function saveUserData(key, value) {
+    try {
+        await dbRequest(userDataStoreName, 'readwrite', 'put', { key, value });
+    } catch (error) {
+        console.error("Error al guardar datos de usuario en DB:", error);
+    }
+}
+
+async function getAllUserData() {
+    try {
+        const records = await dbRequest(userDataStoreName, 'readonly', 'getAll'); // This was also correct.
+        return records.reduce((obj, item) => {
+            obj[item.key] = item.value;
+            return obj;
+        }, {});
+    } catch (error) {
+        console.error("Error al obtener datos de usuario:", error);
+        return {};
+    }
+}
+
+async function loadHistoryFromDB() {
+    try {
+        const messages = await dbRequest(storeName, 'readonly', 'getAll'); // This was also correct.
         if (messages && messages.length > 0) {
             // Limpiamos el mensaje inicial de "Hola"
             chatBox.innerHTML = '';
             messages.forEach(msg => {
                 addMessage(msg.message, msg.sender);
-                // Reconstruimos el historial para la IA
                 const role = msg.sender === 'user' ? 'user' : 'model';
                 chatHistory.push({ role: role, parts: [{ text: msg.message }] });
             });
         }
-    };
+    } catch (error) {
+        console.error("Error al cargar historial desde DB:", error);
+    }
 }
 
 function clearChat() {
-    // Muestra el modal de confirmación en lugar del alert nativo
-    confirmClearModal.style.display = 'flex';
+    confirmClearModal.classList.add('visible');
 }
 
 clearChatBtn.addEventListener('click', clearChat);
 
-// --- Lógica para el nuevo modal de confirmación ---
 cancelClearBtn.addEventListener('click', () => {
-    confirmClearModal.style.display = 'none';
+    confirmClearModal.classList.remove('visible');
 });
 
-confirmClearActionBtn.addEventListener('click', () => {
-    if (db) {
-        const transaction = db.transaction([storeName], 'readwrite');
-        const objectStore = transaction.objectStore(storeName);
-        const request = objectStore.clear();
-
-        request.onsuccess = () => {
-            console.log("Historial de IndexedDB borrado.");
-            chatBox.innerHTML = `
-                <div class="message bot-message">
-                    <p>¡Hola! He estado esperando tu mensaje. ¿Listo para resolver los misterios del universo o solo quieres saber qué cenar hoy?</p>
-                </div>
-            `;
-            chatHistory = [];
-        };
-        request.onerror = (event) => {
-            console.error("Error al borrar el historial de IndexedDB:", event.target.error);
-        };
+confirmClearActionBtn.addEventListener('click', async () => {
+    try {
+        await dbRequest(storeName, 'readwrite', 'clear'); // This was also correct.
+        console.log("Historial de IndexedDB borrado.");
+        chatBox.innerHTML = `
+            <div class="message bot-message">
+                <p>¡Hola! He estado esperando tu mensaje. ¿Listo para resolver los misterios del universo o solo quieres saber qué cenar hoy?</p>
+            </div>
+        `;
+        chatHistory = [];
         showToast("Historial borrado. ¡Aún recuerdo lo importante!");
+    } catch (error) {
+        console.error("Error al borrar el historial de IndexedDB:", error);
     }
-    confirmClearModal.style.display = 'none';
+    confirmClearModal.classList.remove('visible');
 });
 
 // --- Lógica del Modal de Configuración ---
 
+function applyTheme(theme) {
+    if (theme === 'dark') {
+        document.body.classList.add('dark-mode');
+    } else {
+        document.body.classList.remove('dark-mode');
+    }
+}
+
 function openSettingsModal() {
-    settingsModal.style.display = 'flex';
+    settingsModal.classList.add('visible');
     const savedPersonality = localStorage.getItem('chatbotPersonality') || 'default';
     const savedCustomPrompt = localStorage.getItem('chatbotCustomPrompt') || '';
+    const savedTheme = localStorage.getItem('chatbotTheme') || 'light';
+
     personalitySelect.value = savedPersonality;
     autoSpeechCheckbox.checked = isAutoSpeechEnabled;
+    themeSwitchCheckbox.checked = (savedTheme === 'dark');
+
     if (savedPersonality === 'custom') {
         customPromptTextarea.value = savedCustomPrompt;
         customPromptTextarea.disabled = false;
@@ -223,13 +307,18 @@ function openSettingsModal() {
 }
 
 function closeSettingsModal() {
-    settingsModal.style.display = 'none';
+    // Al cerrar sin guardar, revierte el tema al que está guardado en localStorage.
+    const savedTheme = localStorage.getItem('chatbotTheme') || 'light';
+    applyTheme(savedTheme);
+    settingsModal.classList.remove('visible');
 }
 
 function saveSettings() {
     const selectedPersonality = personalitySelect.value;
+    const selectedTheme = themeSwitchCheckbox.checked ? 'dark' : 'light';
 
     localStorage.setItem('chatbotPersonality', selectedPersonality);
+    localStorage.setItem('chatbotTheme', selectedTheme);
 
     let promptToUse;
     if (selectedPersonality === 'custom') {
@@ -248,16 +337,20 @@ function saveSettings() {
     localStorage.setItem('chatbotAutoSpeech', autoSpeechCheckbox.checked);
     isAutoSpeechEnabled = autoSpeechCheckbox.checked;
     currentSystemInstruction = promptToUse;
+    applyTheme(selectedTheme);
 
     showToast('¡Configuración guardada! Limpia el chat para ver los cambios.');
-    closeSettingsModal();
+    settingsModal.classList.remove('visible'); // Cierra el modal sin revertir el tema
 }
 
 function loadSettings() {
     const savedPersonality = localStorage.getItem('chatbotPersonality') || 'default';
     isAutoSpeechEnabled = localStorage.getItem('chatbotAutoSpeech') === 'true';
     const savedCustomPrompt = localStorage.getItem('chatbotCustomPrompt');
+    const savedTheme = localStorage.getItem('chatbotTheme') || 'light';
+
     currentSystemInstruction = (savedPersonality === 'custom' && savedCustomPrompt) ? savedCustomPrompt : personalities[savedPersonality];
+    applyTheme(savedTheme);
 }
 
 settingsBtn.addEventListener('click', openSettingsModal);
@@ -271,6 +364,12 @@ personalitySelect.addEventListener('change', (e) => {
         customPromptTextarea.disabled = false;
         customPromptTextarea.focus();
     }
+});
+
+// Aplica el tema instantáneamente cuando el usuario cambia el interruptor
+themeSwitchCheckbox.addEventListener('change', (e) => {
+    const newTheme = e.target.checked ? 'dark' : 'light';
+    applyTheme(newTheme);
 });
 // --- Fin de la lógica de IndexedDB ---
 
@@ -311,13 +410,7 @@ function addMessage(message, sender) {
         readAloudBtn.className = 'read-aloud-btn';
         readAloudBtn.title = 'Leer en voz alta';
         readAloudBtn.innerHTML = `🔊`;
-        readAloudBtn.addEventListener('click', () => {
-            // Activa temporalmente para leer este mensaje específico
-            const wasEnabled = isAutoSpeechEnabled;
-            isAutoSpeechEnabled = true;
-            readAloud(message);
-            isAutoSpeechEnabled = wasEnabled; // Restaura el estado original
-        });
+        readAloudBtn.addEventListener('click', () => handleReadAloud(message, readAloudBtn));
         actionsContainer.appendChild(readAloudBtn);
 
         messageElement.appendChild(actionsContainer);
@@ -333,12 +426,18 @@ chatForm.addEventListener('submit', async (e) => {
     const userMessage = userInput.value.trim();
     if (!userMessage) return;
 
+    // Activar estado de carga
+    sendBtn.classList.add('loading');
+    sendBtn.disabled = true;
+    userInput.disabled = true;
+
     // Muestra el mensaje del usuario
     addMessage(userMessage, 'user');
     saveMessageToDB(userMessage, 'user'); // Guarda el mensaje del usuario en la BD
     userInput.value = ''; // Limpia el input
     
     // Crear y mostrar el indicador de "escribiendo..."
+    // (Este indicador visual adicional sigue siendo útil)
     const typingIndicator = document.createElement('div');
     typingIndicator.id = 'typing-indicator';
     typingIndicator.classList.add('message', 'bot-message');
@@ -350,6 +449,12 @@ chatForm.addEventListener('submit', async (e) => {
         // Obtener la memoria persistente del usuario
         const userData = await getAllUserData();
         let finalSystemInstruction = currentSystemInstruction;
+
+        // Añadir fecha y hora actual a la instrucción del sistema
+        const now = new Date();
+        const formattedDate = now.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        const formattedTime = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+        finalSystemInstruction += `\n\nInformación contextual: La fecha actual es ${formattedDate} y la hora es ${formattedTime}.`;
 
         if (Object.keys(userData).length > 0) {
             finalSystemInstruction += `\n\nAquí tienes información que has guardado sobre el usuario (tu memoria a largo plazo): ${JSON.stringify(userData)}`;
@@ -386,7 +491,7 @@ chatForm.addEventListener('submit', async (e) => {
             try {
                 const jsonData = JSON.parse(match[1]);
                 if (jsonData.key && jsonData.value !== undefined) {
-                    saveUserData(jsonData.key, jsonData.value);
+                    await saveUserData(jsonData.key, jsonData.value); // Ahora usamos await
                     console.log(`Guardado en memoria: {${jsonData.key}: ${jsonData.value}}`);
                 }
             } catch (e) {
@@ -401,7 +506,7 @@ chatForm.addEventListener('submit', async (e) => {
         saveMessageToDB(botReply, 'bot'); // Guarda la respuesta del bot en la BD
 
         // Lee la respuesta en voz alta si está activado
-        readAloud(botReply);
+        readAloudAutomatically(botReply);
 
         // Actualiza el historial con el mensaje del usuario y la respuesta del bot
         chatHistory.push({ role: 'user', parts: [{ text: userMessage }] });
@@ -414,9 +519,22 @@ chatForm.addEventListener('submit', async (e) => {
         }
         console.error('Error:', error);
         addMessage('Lo siento, algo salió mal. Por favor, inténtalo de nuevo.', 'bot');
+    } finally {
+        // Desactivar estado de carga, sin importar si hubo éxito o error
+        sendBtn.classList.remove('loading');
+        sendBtn.disabled = false;
+        userInput.disabled = false;
+        // Devolvemos el foco al input para que el usuario pueda escribir de nuevo
+        userInput.focus();
     }
 });
 
 // Cargar configuración al iniciar
-loadSettings();
-populateVoiceList(); // Cargar las voces disponibles del navegador
+async function initializeApp() {
+    await openDB(); // Asegura que la conexión a la BD esté lista
+    loadSettings();
+    loadHistoryFromDB();
+    populateVoiceList();
+}
+
+initializeApp();
